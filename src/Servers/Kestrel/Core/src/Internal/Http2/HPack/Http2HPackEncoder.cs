@@ -34,6 +34,8 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http2.HPack
             _maxHeaderListSize = Http2PeerSettings.DefaultMaxHeaderListSize;
             Head = new HPackHeaderEntry();
             Head.Initialize(-1, string.Empty, string.Empty, int.MaxValue, null);
+            // Bucket count balances memory usage and the expected low number of headers (constrained by the header table size).
+            // Performance with different bucket counts hasn't been measured in detail.
             _headerBuckets = new HPackHeaderEntry[16];
             _hashMask = (byte)(_headerBuckets.Length - 1);
             Head.Before = Head.After = Head;
@@ -52,7 +54,7 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http2.HPack
             }
         }
 
-        public void SetMaxHeaderListSize(uint maxHeaderListSize)
+        public void UpdateMaxHeaderListSize(uint maxHeaderListSize)
         {
             _maxHeaderListSize = maxHeaderListSize;
         }
